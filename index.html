@@ -3,25 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>El bosque de las luciernagas</title>
+    <meta name="description" content="Nunca morirán">
+    <title>El camino de las luciérnagas</title>
     <style>
         body {
             background-color: #3E1C43;
             color: #FFFFFF;
             font-family: monospace, monospace;
-            margin: 40px;
-            padding: 40px;
+            margin: 0;
+            padding: 0;
+            font-size: 1.25em;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            height: 100vh;
+            background-size: cover;
+            background-position: center;
+            transition: background-image 1s ease-in-out;
         }
-        a {
-            color: #87FFC5;
+        #gameArea {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: 100%;
+            position: relative;
+        }
+        #dialogBox {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            max-height: 40vh;
+            overflow-y: auto;
+            text-align: left;
+        }
+        #dialogText {
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            min-height: 50px;
+        }
+        .options-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        a, button {
+            color: #3E1C43;
+            background-color: #87FFC5;
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            font-family: monospace, monospace;
+            font-size: 1em;
+            border: none;
+            text-align: center;
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            transition: background-color 0.2s ease;
+        }
+        a:hover, button:hover {
+            background-color: #6effb0;
+        }
+        /* Ajustes responsivos */
+        @media (max-width: 600px) {
+            body {
+                font-size: 1.2em; /* Texto más pequeño en móviles */
+            }
+            #gameArea {
+                padding: 10px;
+            }
+            #dialogBox {
+                margin-bottom: 10px;
+                padding: 10px 15px;
+                max-height: 50vh;
+            }
+            a, button {
+                padding: 12px 15px;
+                font-size: 1.1em;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="gameArea" dir="auto"></div>
+    <div id="gameArea" dir="auto">
+        <div id="dialogBox">
+            <p id="dialogText"></p>
+            <div id="optionsContainer" class="options-container" style="display:none;"></div>
+        </div>
+        <button id="continueButton">Continuar</button>
+    </div>
     <script>
-        const embedDat = "%7B%22bosque%22:%5B%5B%22Estas%20en%20un%20bosque,%20se%20hace%20tarde,%20las%20luci%C3%A9rnagas%20brillan.%20Hay%20un%20tronco%20que%20cruza%20un%20riachuelo%20lleno%20de%20musgo.%20Del%20otro%20lado%20del%20riachuelo%20hay%20una%20caba%C3%B1a,%20se%20ve%20caliente%20y%20c%C3%B3moda.%22%5D,%5B%22Cruzar%20el%20riachuelo%22,%22riachuelo%22%5D%5D,%22riachuelo%22:%5B%5B%22Vas%20pasando%20el%20tronco%20y%20resbalas,%20caes%20al%20riachuelo,%20extra%C3%B1amente%20las%20luci%C3%A9rnagas%20r%C3%ADen,%20prestas%20m%C3%A1s%20atenci%C3%B3n%20a%20su%20brillo,%20es%20hermoso.%22%5D,%5B%22Te%20invitan%20a%20ir%20con%20ellas.%22%5D,%5B%22Ir%20con%20las%20luci%C3%A9rnagas%22,%22luci%C3%A9rnagas%22%5D,%5B%22Seguir%20a%20la%20caba%C3%B1a%22,%22caba%C3%B1a%22%5D%5D,%22luci%C3%A9rnagas%22:%5B%5B%22Te%20quedas%20a%20jugar%20toda%20la%20noche%20con%20las%20luci%C3%A9rnagas,%20te%20brindan%20calor%20y%20frutas%20deliciosas,%20hacen%20una%20cama%20con%20musgo%20y%20te%20invitan%20a%20quedarte.%22%5D,%5B%22Te%20da%20sue%C3%B1o,%20duermes%20y%20tienes%20un%20sue%C3%B1o%20con%20un%20lugar%20hermoso.%22%5D,%5B%22Ir%20a%20ese%20lugar%22,%22bosque%22%5D%5D,%22caba%C3%B1a%22:%5B%5B%22Llegas%20a%20la%20caba%C3%B1a,%20hay%20chocolate%20caliente%20en%20la%20mesa%20y%20una%20chimenea%20bien%20caliente,%20da%20una%20sensaci%C3%B3n%20de%20gusto%20y%20comodidad,%20te%20sientas%20frente%20al%20fuego.%22%5D,%5B%22Tanta%20comodidad%20te%20da%20sue%C3%B1o,%20al%20dormir%20observas%20un%20lugar%20hermoso.%22%5D,%5B%22Ir%20a%20ese%20lugar%20-%3E%22%5D%5D%7D";
+        const embedDat = "%7B%22bosque%22:%5B%5B%22bg%22,%22bosque.png%22%5D,%5B%22text%22,%22Estas%20en%20un%20bosque,%20se%20hace%20tarde,%20las%20luci%C3%A9rnagas%20brillan.%20Hay%20un%20tronco%20que%20cruza%20un%20riachuelo%20lleno%20de%20musgo.%20Del%20otro%20lado%20del%20riachuelo%20hay%20una%20caba%C3%B1a,%20se%20ve%20caliente%20y%20c%C3%B3moda.%22%5D,%5B%22link%22,%22Cruzar%20el%20riachuelo%22,%22riachuelo%22%5D%5D,%22riachuelo%22:%5B%5B%22text%22,%22Vas%20pasando%20el%20tronco%20y%20resbalas,%20caes%20al%20riachuelo,%20extra%C3%B1amente%20las%20luci%C3%A9rnagas%20r%C3%ADen,%20prestas%20m%C3%A1s%20atenci%C3%B3n%20a%20su%20brillo,%20es%20hermoso.%22%5D,%5B%22text%22,%22Te%20invitan%20a%20ir%20con%20ellas.%22%5D,%5B%22link%22,%22Ir%20con%20las%20luci%C3%A9rnagas%22,%22luci%C3%A9rnagas%22%5D,%5B%22link%22,%22Seguir%20a%20la%20caba%C3%B1a%22,%22caba%C3%B1a%22%5D%5D,%22luci%C3%A9rnagas%22:%5B%5B%22bg%22,%22luciernagas.png%22%5D,%5B%22text%22,%22Te%20quedas%20a%20jugar%20toda%20la%20noche%20con%20las%20luci%C3%A9rnagas,%20te%20brindan%20calor%20y%20frutas%20deliciosas,%20hacen%20una%20cama%20con%20musgo%20y%20te%20invitan%20a%20quedarte.%22%5D,%5B%22text%22,%22Te%20da%20sue%C3%B1o,%20duermes%20y%20tienes%20un%20sue%C3%B1o%20con%20un%20lugar%20hermoso.%22%5D,%5B%22link%22,%22Ir%20a%20ese%20lugar%22,%22bosque%22%5D%5D,%22caba%C3%B1a%22:%5B%5B%22bg%22,%22cabana.png%22%5D,%5B%22text%22,%22Llegas%20a%20la%20caba%C3%B1a,%20hay%20chocolate%20caliente%20en%20la%20mesa%20y%20una%20chimenea%20bien%20caliente,%20da%20una%20sensaci%C3%B3n%20de%20gusto%20y%20comodidad,%20te%20sientas%20frente%20al%20fuego.%22%5D,%5B%22text%22,%22Tanta%20comodidad%20te%20da%20sue%C3%B1o,%20al%20dormir%20observas%20un%20lugar%20hermoso.%22%5D,%5B%22link%22,%22Ir%20a%20ese%20lugar%22,%22bosque%22%5D%5D%7D";
         const gameState = JSON.parse(decodeURI(embedDat));
+        const gameArea = document.getElementById("gameArea");
+        const dialogTextElement = document.getElementById("dialogText");
+        const optionsContainer = document.getElementById("optionsContainer");
+        const continueButton = document.getElementById("continueButton");
+
+        let currentRoom = '';
+        let currentContentIndex = 0;
+        let dialogueSequence = [];
+        let backgroundImageUrl = '';
 
         function escapeHtmlEntities(str) {
             return str.replace(/&/g, '&amp;')
@@ -30,33 +125,81 @@
                       .replace(/"/g, '&quot;');
         }
 
-        function goTo(targetState) {
-            const gameArea = document.getElementById("gameArea");
-            const curState = gameState[targetState];
-            let str = "";
+        function displayNextContent() {
+            if (currentContentIndex < dialogueSequence.length) {
+                dialogTextElement.innerHTML = escapeHtmlEntities(dialogueSequence[currentContentIndex]);
+                currentContentIndex++;
+                optionsContainer.style.display = 'none';
+                continueButton.style.display = 'block';
+            } else {
+                showOptions();
+                continueButton.style.display = 'none';
+            }
+        }
 
-            if (!curState) {
+        function showOptions() {
+            optionsContainer.innerHTML = '';
+            const roomContent = gameState[currentRoom];
+            const links = roomContent.filter(item => item[0] === 'link');
+
+            if (links.length > 0) {
+                links.forEach(link => {
+                    const anchor = document.createElement('a');
+                    anchor.href = "#";
+                    anchor.textContent = escapeHtmlEntities(link[1]);
+                    anchor.onclick = () => {
+                        goTo(link[2]);
+                        return false;
+                    };
+                    optionsContainer.appendChild(anchor);
+                });
+                optionsContainer.style.display = 'flex';
+            } else {
+                dialogTextElement.innerHTML += "<p>Fin de la aventura. <a href='#' onclick='init(); return false;'>Reiniciar</a></p>";
+                optionsContainer.style.display = 'none';
+                continueButton.style.display = 'none';
+            }
+        }
+
+        function goTo(targetState) {
+            currentRoom = targetState;
+            const roomContent = gameState[targetState];
+
+            if (!roomContent) {
                 gameArea.innerHTML = "<p>Error: Habitación no encontrada.</p>";
                 return;
             }
 
-            for (let i = 0; i < curState.length; i++) {
-                const l = curState[i];
-                if (l.length === 1) {
-                    str += `<p>${escapeHtmlEntities(l[0])}</p>`;
-                } else if (l.length === 2) {
-                    str += `<a href="#" onclick="goTo('${escapeHtmlEntities(l[1])}'); return false;">${escapeHtmlEntities(l[0])}</a>`;
+            dialogueSequence = [];
+            let newBackground = null;
+
+            roomContent.forEach(item => {
+                if (item[0] === 'bg') {
+                    newBackground = item[1];
+                } else if (item[0] === 'text') {
+                    dialogueSequence.push(item[1]);
                 }
+            });
+
+            if (newBackground) {
+                document.body.style.backgroundImage = `url("${newBackground}")`;
+            } else if (!document.body.style.backgroundImage) {
+                 document.body.style.backgroundImage = 'none';
+                 document.body.style.backgroundColor = '#3E1C43';
             }
-            gameArea.innerHTML = str;
+            
+            currentContentIndex = 0;
+            displayNextContent();
         }
+
+        continueButton.addEventListener('click', displayNextContent);
 
         function init() {
             const firstRoomKey = Object.keys(gameState)[0];
             if (firstRoomKey) {
                 goTo(firstRoomKey);
             } else {
-                document.getElementById("gameArea").innerHTML = "<p>Error: No hay habitaciones definidas en el juego.</p>";
+                gameArea.innerHTML = "<p>Error: No hay habitaciones definidas en el juego.</p>";
             }
         }
         
