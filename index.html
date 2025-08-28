@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html dir="auto">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El bosque de las luciernagas</title>
+    <style>
+        body {
+            background-color: #3E1C43;
+            color: #FFFFFF;
+            font-family: monospace, monospace;
+            margin: 40px;
+            padding: 40px;
+        }
+        a {
+            color: #87FFC5;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameArea" dir="auto"></div>
+    <script>
+        const embedDat = "%7B%22bosque%22:%5B%5B%22Estas%20en%20un%20bosque,%20se%20hace%20tarde,%20las%20luci%C3%A9rnagas%20brillan.%20Hay%20un%20tronco%20que%20cruza%20un%20riachuelo%20lleno%20de%20musgo.%20Del%20otro%20lado%20del%20riachuelo%20hay%20una%20caba%C3%B1a,%20se%20ve%20caliente%20y%20c%C3%B3moda.%22%5D,%5B%22Cruzar%20el%20riachuelo%22,%22riachuelo%22%5D%5D,%22riachuelo%22:%5B%5B%22Vas%20pasando%20el%20tronco%20y%20resbalas,%20caes%20al%20riachuelo,%20extra%C3%B1amente%20las%20luci%C3%A9rnagas%20r%C3%ADen,%20prestas%20m%C3%A1s%20atenci%C3%B3n%20a%20su%20brillo,%20es%20hermoso.%22%5D,%5B%22Te%20invitan%20a%20ir%20con%20ellas.%22%5D,%5B%22Ir%20con%20las%20luci%C3%A9rnagas%22,%22luci%C3%A9rnagas%22%5D,%5B%22Seguir%20a%20la%20caba%C3%B1a%22,%22caba%C3%B1a%22%5D%5D,%22luci%C3%A9rnagas%22:%5B%5B%22Te%20quedas%20a%20jugar%20toda%20la%20noche%20con%20las%20luci%C3%A9rnagas,%20te%20brindan%20calor%20y%20frutas%20deliciosas,%20hacen%20una%20cama%20con%20musgo%20y%20te%20invitan%20a%20quedarte.%22%5D,%5B%22Te%20da%20sue%C3%B1o,%20duermes%20y%20tienes%20un%20sue%C3%B1o%20con%20un%20lugar%20hermoso.%22%5D,%5B%22Ir%20a%20ese%20lugar%22,%22bosque%22%5D%5D,%22caba%C3%B1a%22:%5B%5B%22Llegas%20a%20la%20caba%C3%B1a,%20hay%20chocolate%20caliente%20en%20la%20mesa%20y%20una%20chimenea%20bien%20caliente,%20da%20una%20sensaci%C3%B3n%20de%20gusto%20y%20comodidad,%20te%20sientas%20frente%20al%20fuego.%22%5D,%5B%22Tanta%20comodidad%20te%20da%20sue%C3%B1o,%20al%20dormir%20observas%20un%20lugar%20hermoso.%22%5D,%5B%22Ir%20a%20ese%20lugar%20-%3E%22%5D%5D%7D";
+        const gameState = JSON.parse(decodeURI(embedDat));
+
+        function escapeHtmlEntities(str) {
+            return str.replace(/&/g, '&amp;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/</g, '&lt;')
+                      .replace(/"/g, '&quot;');
+        }
+
+        function goTo(targetState) {
+            const gameArea = document.getElementById("gameArea");
+            const curState = gameState[targetState];
+            let str = "";
+
+            if (!curState) {
+                gameArea.innerHTML = "<p>Error: Habitación no encontrada.</p>";
+                return;
+            }
+
+            for (let i = 0; i < curState.length; i++) {
+                const l = curState[i];
+                if (l.length === 1) {
+                    str += `<p>${escapeHtmlEntities(l[0])}</p>`;
+                } else if (l.length === 2) {
+                    str += `<a href="#" onclick="goTo('${escapeHtmlEntities(l[1])}'); return false;">${escapeHtmlEntities(l[0])}</a>`;
+                }
+            }
+            gameArea.innerHTML = str;
+        }
+
+        function init() {
+            const firstRoomKey = Object.keys(gameState)[0];
+            if (firstRoomKey) {
+                goTo(firstRoomKey);
+            } else {
+                document.getElementById("gameArea").innerHTML = "<p>Error: No hay habitaciones definidas en el juego.</p>";
+            }
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>
